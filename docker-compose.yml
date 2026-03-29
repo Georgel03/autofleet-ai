@@ -35,9 +35,8 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/autofleet?createDatabaseIfNotExist=true
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
-      - SPRING_AI_OPENAI_API_KEY=sk-cheie-falsa-pentru-teste-momentan
-
-  
+      - OPENAI_API_KEY=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
+      
   frontend:
     build: 
       context: ./frontend
