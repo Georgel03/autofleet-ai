@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component // Îi spune lui Spring să creeze un obiect din clasa asta ca să-l poată injecta în Service
+@Component // spring creeza un obiect din clasa asta ca sa-l poata injecta in Service
 public class VehicleMapper {
 
     public VehicleResponseDTO toDto(Vehicle vehicle) {
@@ -89,7 +89,7 @@ public class VehicleMapper {
         );
     }
 
-    // functie ce transforma lista de entitati de mentenanta in DTO-uri
+    // functie care transforma lista de entitati de mentenanta in DTO-uri
     private List<MaintenanceRecordDTO> mapMaintenanceHistory(List<MaintenanceRecord> records) {
         if (records == null || records.isEmpty()) {
             return List.of();
@@ -102,5 +102,54 @@ public class VehicleMapper {
                         r.getCost()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    // Transformam DTO-ul primit de la frontend intr-o Entitate noua pentru baza de date
+    public Vehicle toEntity(com.autofleet.autofleet_ai.dto.CreateVehicleDTO dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        Vehicle vehicle;
+
+        // Decidem ce tip de obiect instantiem pe baza string-ului din frontend
+        switch (dto.engineType().toUpperCase()) {
+            case "ELECTRIC" -> {
+                ElectricVehicle ev = new ElectricVehicle();
+                ev.setBatteryCapacity(dto.batteryCapacity());
+                ev.setMaxRange(dto.maxRange());
+                vehicle = ev;
+            }
+            case "HYBRID" -> {
+                HybridVehicle hv = new HybridVehicle();
+                hv.setDisplacement(dto.displacement());
+                hv.setCylinders(dto.cylinders());
+                hv.setBatteryCapacity(dto.batteryCapacity());
+                vehicle = hv;
+            }
+            case "THERMAL" -> {
+                ThermalVehicle tv = new ThermalVehicle();
+                tv.setDisplacement(dto.displacement());
+                tv.setCylinders(dto.cylinders());
+                tv.setFuelType(dto.fuelType());
+                vehicle = tv;
+            }
+            default -> throw new IllegalArgumentException("Tip de motor necunoscut: " + dto.engineType());
+        }
+
+        // Setam datele comune pe care le au toate masinile (din clasa parinte)
+        vehicle.setManufacturer(dto.manufacturer());
+        vehicle.setModel(dto.model());
+        vehicle.setLicensePlate(dto.licensePlate());
+        vehicle.setMileage(dto.mileage());
+        vehicle.setHorsePower(dto.horsePower());
+
+        // Cand cream o masina noua in sistem, statusul implicit este OK si scorul 100
+        vehicle.setStatus(VehicleStatus.OK);
+        vehicle.setHealthScore(100);
+        // Generam un VIN fals temporar pentru design (in productie ar veni din DTO)
+        vehicle.setVin("AUTO" + System.currentTimeMillis() + "FLT");
+
+        return vehicle;
     }
 }
