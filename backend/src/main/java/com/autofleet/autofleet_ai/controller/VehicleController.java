@@ -17,19 +17,19 @@ public class VehicleController {
 
     private final VehicleService vehicleService;
 
-    // Injectam Service-ul pe care tocmai l-am creat
+    // injectam Service-ul pe care tocmai l-am creat
     public VehicleController(VehicleService vehicleService) {
         this.vehicleService = vehicleService;
     }
 
-    // 1. GET: Aducem toata flota de masini
+    // get Aducem toata flota de masini
     @GetMapping
     public ResponseEntity<List<VehicleResponseDTO>> getAllVehicles() {
         List<VehicleResponseDTO> vehicles = vehicleService.getAllVehicles();
         return ResponseEntity.ok(vehicles);
     }
 
-    // 2. POST: Adaugam o masina noua
+    // post adaugam o masina noua
     // Adnotarea @Valid ii spune lui Spring sa verifice regulile din DTO (@NotBlank, @PositiveOrZero)
     @PostMapping
     public ResponseEntity<VehicleResponseDTO> createVehicle(@Valid @RequestBody CreateVehicleDTO createDTO) {
