@@ -1,7 +1,10 @@
 db_data/
-
+backend/src/main/resources/application.properties
+.env
 .idea/
 .vscode/
+docker-compose.yml
+docker-compose.override.yml
 
 backend/target/
 backend/*.jar
