@@ -4,6 +4,7 @@ import com.autofleet.autofleet_ai.dto.AIPredictionDTO;
 import com.autofleet.autofleet_ai.entity.AIPrediction;
 import com.autofleet.autofleet_ai.entity.MaintenanceRecord;
 import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.entity.VehicleStatus;
 import com.autofleet.autofleet_ai.repository.AIPredictionRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -112,6 +113,17 @@ public class AIPredictionService {
             prediction.setCreatedAt(LocalDateTime.now());
 
             AIPrediction saved = aiRepository.save(prediction);
+
+            String urgency = saved.getUrgency().toUpperCase();
+            if (urgency.equals("HIGH")) {
+                vehicle.setStatus(VehicleStatus.MAINTENANCE_REQUIRED);
+            } else if (urgency.equals("MEDIUM")) {
+                vehicle.setStatus(VehicleStatus.WARNING);
+            } else {
+                vehicle.setStatus(VehicleStatus.OK);
+            }
+
+            vehicleRepository.save(vehicle);
 
             return new AIPredictionDTO(
                     saved.getId(), saved.getPredictedComponent(), saved.getUrgency(),

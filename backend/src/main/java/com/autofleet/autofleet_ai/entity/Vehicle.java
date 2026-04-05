@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "vehicles")
-@Inheritance(strategy = InheritanceType.JOINED) // Strategia "Clean Architecture"
+@Inheritance(strategy = InheritanceType.JOINED)
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public abstract class Vehicle {
 
@@ -28,6 +28,10 @@ public abstract class Vehicle {
     private Integer healthScore;
     private String vin;
     private Integer horsePower;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
     private List<MaintenanceRecord> maintenanceHistory;
