@@ -8,6 +8,6 @@ import lombok.Setter;
 @Table(name = "electric_vehicles")
 @Getter @Setter @NoArgsConstructor
 public class ElectricVehicle extends Vehicle {
-    private Integer batteryCapacity; // kWh
-    private Integer maxRange;        // km
+    private Integer batteryCapacity;
+    private Integer maxRange;
 }

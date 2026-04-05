@@ -37,6 +37,6 @@ public abstract class Vehicle {
     private List<MaintenanceRecord> maintenanceHistory;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("createdAt DESC") // baza de date face sortarea pentru noi
+    @OrderBy("createdAt DESC")
     private List<AIPrediction> aiPredictions;
 }

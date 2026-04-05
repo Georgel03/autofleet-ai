@@ -7,7 +7,6 @@ import api from '../api/axiosConfig';
 const Analytics = () => {
   const navigate = useNavigate();
   
-  // Starea care va ține datele reale de la Spring Boot
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -47,11 +46,9 @@ const Analytics = () => {
     return <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-neon-cyan font-mono animate-pulse">AGGREGATING_TELEMETRY_DATA...</div>;
   }
 
-  // --- CALCULE PENTRU BARELE VIZUALE ---
-  // Găsim cea mai scumpă mașină pentru a seta lățimea barei albastre (la 100%)
+  
   const maxVehicleCost = data?.topVehicles.length > 0 ? Math.max(...data.topVehicles.map(v => v.value)) : 1;
   
-  // Extragem valorile pentru motorizări și calculăm maximul pentru a scala înălțimea barelor
   const getAvgCost = (type) => data?.powertrainCosts.find(p => p.type === type)?.avgCost || 0;
   const thermalCost = getAvgCost("Thermal");
   const hybridCost = getAvgCost("Hybrid");
@@ -60,7 +57,7 @@ const Analytics = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-gray-300 flex font-mono">
-      {/* SIDEBAR */}
+     
       <aside className="w-64 border-r border-gray-800 bg-[#0a0a0f] flex flex-col z-20 shrink-0">
         <div className="p-6">
           <h1 className="text-xl font-bold text-neon-pink flex items-center gap-2 tracking-wider">
@@ -94,7 +91,7 @@ const Analytics = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
+      
       <main className="flex-1 flex flex-col relative overflow-hidden bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px]">
         <header className="h-20 border-b border-gray-800 flex items-center justify-between px-8 bg-[#0a0a0f]/90 backdrop-blur z-10">
           <div className="flex items-center gap-8">
@@ -118,7 +115,7 @@ const Analytics = () => {
             <p className="text-neon-cyan text-xs tracking-widest uppercase mt-2 font-bold">Sector 7 — Historical Maintenance Costs & Predictions</p>
           </div>
 
-          {/* MAIN GRAPH (Recharts AREA CHART) conectat la DB */}
+         
           <div className="bg-[#12131c] border border-gray-800 rounded-xl p-6 relative">
             <div className="flex justify-between items-start mb-8">
               <div>
@@ -154,7 +151,7 @@ const Analytics = () => {
 
           <div className="grid grid-cols-2 gap-6">
             
-            {/* TOP 5 EXPENSIVE VEHICLES conectat la DB */}
+           
             <div className="bg-[#12131c] border border-gray-800 rounded-xl p-6 relative overflow-hidden group hover:border-neon-cyan/50 transition-colors">
               <h3 className="text-white font-bold text-lg flex items-center gap-2"><Car className="w-5 h-5 text-neon-cyan"/> Highest Maintenance Cost</h3>
               <p className="text-[10px] text-neon-cyan tracking-widest uppercase mb-8">Performance Index: Lifetime Cost (USD)</p>
@@ -168,7 +165,6 @@ const Analytics = () => {
                       <span className="text-neon-cyan">${vehicle.value.toLocaleString()}</span>
                     </div>
                     <div className="h-1.5 w-full bg-gray-900 rounded overflow-hidden border border-gray-800">
-                      {/* Lățimea calculată dinamic în procente */}
                       <div className="h-full bg-neon-cyan shadow-[0_0_8px_#00ffcc]" style={{ width: `${(vehicle.value / maxVehicleCost) * 100}%` }}></div>
                     </div>
                   </div>
@@ -176,7 +172,7 @@ const Analytics = () => {
               </div>
             </div>
 
-            {/* AVG COST BY ENGINE TYPE conectat la DB */}
+            
             <div className="bg-[#12131c] border border-gray-800 rounded-xl p-6 relative overflow-hidden flex flex-col group hover:border-yellow-400/50 transition-colors">
               <ShieldAlert className="absolute -right-6 -top-6 w-48 h-48 text-gray-800/10 -rotate-12 group-hover:text-yellow-400/5 transition-colors" />
               <div>
@@ -185,21 +181,20 @@ const Analytics = () => {
               </div>
 
               <div className="flex-1 flex items-end gap-6 pb-8 z-10 h-40">
-                {/* THERMAL */}
                 <div className="flex-1 flex flex-col items-center gap-3 h-full justify-end">
                   <span className="text-xs font-bold text-white">${thermalCost.toLocaleString()}</span>
                   <div className="w-full bg-yellow-400 rounded-t shadow-[0_0_10px_rgba(250,204,21,0.4)] transition-all" 
                        style={{ height: `${Math.max((thermalCost / maxPowertrainCost) * 100, 5)}%` }}></div>
                   <span className="text-[10px] text-gray-500 tracking-widest uppercase font-bold">Thermal</span>
                 </div>
-                {/* HYBRID */}
+                
                 <div className="flex-1 flex flex-col items-center gap-3 h-full justify-end">
                   <span className="text-xs font-bold text-white">${hybridCost.toLocaleString()}</span>
                   <div className="w-full bg-yellow-400/70 rounded-t shadow-[0_0_10px_rgba(250,204,21,0.2)] transition-all" 
                        style={{ height: `${Math.max((hybridCost / maxPowertrainCost) * 100, 5)}%` }}></div>
                   <span className="text-[10px] text-gray-500 tracking-widest uppercase font-bold">Hybrid</span>
                 </div>
-                {/* ELECTRIC */}
+               
                 <div className="flex-1 flex flex-col items-center gap-3 h-full justify-end">
                   <span className="text-xs font-bold text-neon-cyan">${electricCost.toLocaleString()}</span>
                   <div className="w-full bg-neon-cyan rounded-t shadow-[0_0_10px_rgba(0,255,204,0.4)] transition-all" 

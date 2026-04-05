@@ -29,7 +29,7 @@ public class MaintenanceRecordService {
         this.maintenanceMapper = maintenanceMapper;
     }
 
-    // 1. GET ALL pentru o anumita masina (extrem de util pentru frontend)
+
     public List<MaintenanceRecordDTO> getRecordsByVehicleId(Long vehicleId) {
         // Verificam intai daca masina exista
         if (!vehicleRepository.existsById(vehicleId)) {
@@ -42,7 +42,7 @@ public class MaintenanceRecordService {
                 .collect(Collectors.toList());
     }
 
-    // 2. CREATE
+
     @Transactional
     public MaintenanceRecordDTO createRecord(CreateMaintenanceRecordDTO createDTO) {
         // Cautam masina in baza de date folosind ID-ul din DTO
@@ -56,7 +56,7 @@ public class MaintenanceRecordService {
         return maintenanceMapper.toDto(savedRecord);
     }
 
-    // 3. UPDATE (PATCH)
+
     @Transactional
     public MaintenanceRecordDTO updateRecord(Long id, UpdateMaintenanceRecordDTO updateDTO) {
         MaintenanceRecord existingRecord = maintenanceRepository.findById(id)
@@ -76,7 +76,7 @@ public class MaintenanceRecordService {
         return maintenanceMapper.toDto(savedRecord);
     }
 
-    // 4. DELETE
+
     @Transactional
     public void deleteRecord(Long id) {
         if (!maintenanceRepository.existsById(id)) {

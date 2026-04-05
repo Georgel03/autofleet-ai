@@ -18,14 +18,14 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/vehicles")
-@CrossOrigin(origins = "http://localhost:5173") // permite frontendului sa faca requesturi fara erori de CORS
+@CrossOrigin(origins = "http://localhost:5173")
 public class VehicleController {
 
     private final VehicleService vehicleService;
 
     private final ExcelExportService excelExportService;
 
-    // injectam Service-ul pe care tocmai l-am creat
+
     public VehicleController(VehicleService vehicleService, ExcelExportService excelExportService) {
         this.vehicleService = vehicleService;
         this.excelExportService = excelExportService;
@@ -50,7 +50,7 @@ public class VehicleController {
         }
     }
 
-    // get Aducem toata flota de masini
+    // get aducem toata flota de masini
     @GetMapping
     public ResponseEntity<Page<VehicleResponseDTO>> getAllVehicles(
             @RequestParam(defaultValue = "0") int page,

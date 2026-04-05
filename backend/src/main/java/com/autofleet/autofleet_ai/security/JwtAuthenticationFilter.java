@@ -59,7 +59,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // verificam daca token-ul este valid si aparține acestui user
             if (jwtService.isTokenValid(jwt, userDetails)) {
 
-                // cream tokenul de Autentificare intern pentru Spring
+                // cream tokenul de autentificare intern pentru spring
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,
                         null,

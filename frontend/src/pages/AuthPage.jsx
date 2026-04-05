@@ -3,7 +3,7 @@ import { Car, Mail, Lock, User, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-// url-ul de baza pentru API-ul de autentificare 
+
 const API_URL = 'http://localhost:8080/api/auth';
 
 const AuthPage = () => {
@@ -13,7 +13,7 @@ const AuthPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Stările pentru formulare
+  
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -55,7 +55,7 @@ const AuthPage = () => {
           throw new Error("Trebuie să accepți directivele de operare.");
         }
 
-        // Împărțim "Full Name" în first/last name pentru Backend-ul tău
+        
         const nameParts = formData.fullName.trim().split(' ');
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || 'User';
@@ -72,7 +72,7 @@ const AuthPage = () => {
         navigate('/dashboard');
       }
     } catch (err) {
-      // Afișăm eroarea venită de la server (ex: "Email deja folosit" sau "Parolă greșită")
+      
       setError(err.response?.data?.message || err.message || 'A apărut o eroare în sistem.');
     } finally {
       setIsLoading(false);
@@ -82,10 +82,10 @@ const AuthPage = () => {
   return (
     <div className="min-h-screen bg-neon-dark text-gray-300 font-sans flex flex-col items-center justify-center p-4 relative overflow-hidden">
       
-      {/* Fundal Grid Subtil */}
+      
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]"></div>
 
-      {/* Header / Logo */}
+      
       <div className="z-10 flex flex-col items-center mb-8">
         <Car className="text-neon-pink w-12 h-12 mb-2" />
         <h1 className="text-3xl font-bold text-neon-pink tracking-wider">NEON_FLEET_OS</h1>
@@ -94,7 +94,7 @@ const AuthPage = () => {
         </p>
       </div>
 
-      {/* Container Principal Formular (Cu Glow) */}
+      
       <div className="z-10 w-full max-w-md bg-neon-panel border border-neon-pink/30 rounded-lg p-8 shadow-[0_0_30px_rgba(255,0,85,0.1)] relative">
         
         <h2 className="text-xl text-white font-semibold mb-6 flex items-center gap-2 border-l-2 border-neon-pink pl-3">
@@ -109,7 +109,7 @@ const AuthPage = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           
-          {/* Câmp Nume Complet (Doar la Register) */}
+          
           {!isLogin && (
             <div>
               <label className="block text-xs font-mono text-gray-500 mb-1 tracking-wider">FULL NAME</label>
@@ -128,7 +128,7 @@ const AuthPage = () => {
             </div>
           )}
 
-          {/* Câmp Email */}
+          
           <div>
             <label className="block text-xs font-mono text-gray-500 mb-1 tracking-wider">
               {isLogin ? 'TERMINAL ID / EMAIL' : 'WORK EMAIL'}
@@ -147,7 +147,7 @@ const AuthPage = () => {
             </div>
           </div>
 
-          {/* Câmp Parolă */}
+         
           <div className="flex gap-4">
             <div className="flex-1">
               <div className="flex justify-between items-center mb-1">
@@ -179,7 +179,7 @@ const AuthPage = () => {
               </div>
             </div>
 
-            {/* Confirmare Parolă (Doar la Register) */}
+           
             {!isLogin && (
               <div className="flex-1">
                 <label className="block text-xs font-mono text-gray-500 mb-1 tracking-wider">CONFIRM</label>
@@ -199,7 +199,7 @@ const AuthPage = () => {
             )}
           </div>
 
-          {/* Checkbox-uri */}
+         
           <div className="pt-2">
             {isLogin ? (
               <label className="flex items-center gap-2 cursor-pointer group">
@@ -222,7 +222,7 @@ const AuthPage = () => {
             )}
           </div>
 
-          {/* Buton Submit */}
+          
           <button 
             type="submit" 
             disabled={isLoading}
@@ -233,7 +233,7 @@ const AuthPage = () => {
 
         </form>
 
-        {/* Buton Comutare între ecrane */}
+        
         <div className="mt-8 text-center border-t border-gray-800 pt-6">
           <p className="text-xs font-mono text-gray-500">
             {isLogin ? 'NEW UNIT?' : 'ALREADY_HAVE_ACCOUNT?'}
@@ -248,7 +248,7 @@ const AuthPage = () => {
 
       </div>
       
-      {/* Footer Text */}
+      
       <div className="absolute bottom-4 text-center z-10">
         <p className="text-[10px] font-mono text-gray-600 tracking-widest">
           SYSTEM VERSION 4.0.2 // SECURED BY QUANTUM_SHIELD

@@ -28,12 +28,12 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponseDTO register(RegisterRequestDTO request) {
-        // 1. Verificam daca email-ul exista deja (optional, dar recomandat)
+        // verificam daca email-ul exista deja
         if (repository.findByEmail(request.email()).isPresent()) {
             throw new RuntimeException("Acest email este deja folosit!");
         }
 
-        // 2. Construim noul utilizator
+        // construim noul utilizator
         User user = new User();
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
@@ -41,18 +41,16 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(request.password()));
         user.setRole(Role.USER);
 
-        // 3. Salvam in baza de date
+        // salvam in baza de date
         repository.save(user);
 
-        // 4. Generam token-ul pentru a-l loga automat dupa inregistrare
+        // generam token-ul pentru a-l loga automat dupa inregistrare
         var jwtToken = jwtService.generateToken(user);
 
         return new AuthenticationResponseDTO(jwtToken);
     }
 
     public AuthenticationResponseDTO authenticate(AuthenticationRequestDTO request) {
-        // 1. AuthenticationManager se ocupa automat de verificarea parolei criptate
-        // Daca parola e gresita, arunca o eroare si se opreste aici
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.email(),
@@ -60,11 +58,9 @@ public class AuthenticationService {
                 )
         );
 
-        // 2. Daca a trecut de pasul 1, datele sunt corecte. Scoatem userul din DB.
         var user = repository.findByEmail(request.email())
                 .orElseThrow();
 
-        // 3. Generam un nou token JWT
         var jwtToken = jwtService.generateToken(user);
 
         return new AuthenticationResponseDTO(jwtToken);

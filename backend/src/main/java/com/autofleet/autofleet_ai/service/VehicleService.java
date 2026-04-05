@@ -22,7 +22,7 @@ public class VehicleService {
 
     private final VehicleRepository vehicleRepository;
     private final VehicleMapper vehicleMapper;
-    private final UserRepository userRepository; // NOU
+    private final UserRepository userRepository;
 
     public VehicleService(VehicleRepository vehicleRepository, VehicleMapper vehicleMapper, UserRepository userRepository) {
         this.vehicleRepository = vehicleRepository;
@@ -30,14 +30,14 @@ public class VehicleService {
         this.userRepository = userRepository;
     }
 
-    // --- MAGIA: Extragerea utilizatorului logat din Token-ul JWT ---
+
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
-    // --- STATISTICI SECURIZATE ---
+
     public FleetStatsDTO getFleetStats() {
         User user = getCurrentUser();
         Long totalVehicles = vehicleRepository.getVehiclesCountByUser(user);
@@ -47,7 +47,7 @@ public class VehicleService {
         return new FleetStatsDTO(totalVehicles, totalMileage, criticalCount);
     }
 
-    // --- LISTARE SECURIZATĂ ---
+
     public Page<VehicleResponseDTO> getVehiclesPage(int page, int size, String sortBy, String sortDir, String keyword) {
         User user = getCurrentUser();
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -62,19 +62,18 @@ public class VehicleService {
         return vehiclePage.map(vehicleMapper::toDto);
     }
 
-    // --- DETALII SECURIZATE ---
+
     public VehicleResponseDTO getVehicle(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
 
-        // Verificăm dacă mașina îi aparține
         if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
             throw new AccessDeniedException("Nu ai permisiunea sa accesezi aceasta masina!");
         }
         return vehicleMapper.toDto(vehicle);
     }
 
-    // --- CREARE SECURIZATĂ ---
+
     @Transactional
     public VehicleResponseDTO createVehicle(CreateVehicleDTO createDTO) {
         User user = getCurrentUser();
@@ -84,13 +83,13 @@ public class VehicleService {
         }
 
         Vehicle newVehicle = vehicleMapper.toEntity(createDTO);
-        newVehicle.setUser(user); // Îi alocăm proprietarul!
+        newVehicle.setUser(user);
 
         Vehicle savedVehicle = vehicleRepository.save(newVehicle);
         return vehicleMapper.toDto(savedVehicle);
     }
 
-    // --- MODIFICARE SECURIZATĂ ---
+
     @Transactional
     public VehicleResponseDTO updateVehicle(Long id, UpdateVehicleDTO updateDTO) {
         User user = getCurrentUser();
@@ -101,7 +100,7 @@ public class VehicleService {
             throw new AccessDeniedException("Nu poti modifica masina altui utilizator!");
         }
 
-        // Restul logicii de update ramane la fel
+
         if (updateDTO.manufacturer() != null) existingVehicle.setManufacturer(updateDTO.manufacturer());
         if (updateDTO.model() != null) existingVehicle.setModel(updateDTO.model());
         if (updateDTO.licensePlate() != null) {
@@ -116,7 +115,7 @@ public class VehicleService {
         return vehicleMapper.toDto(vehicleRepository.save(existingVehicle));
     }
 
-    // --- STERGERE SECURIZATĂ ---
+
     @Transactional
     public void deleteVehicle(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)

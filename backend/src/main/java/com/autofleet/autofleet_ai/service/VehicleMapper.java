@@ -50,7 +50,7 @@ public class VehicleMapper {
             default -> {}
         }
 
-        // Construim marele DTO final
+        // construim  DTO final
         return new VehicleResponseDTO(
                 vehicle.getId(),
                 vehicle.getManufacturer(),
@@ -104,7 +104,7 @@ public class VehicleMapper {
                 .collect(Collectors.toList());
     }
 
-    // Transformam DTO-ul primit de la frontend intr-o Entitate noua pentru baza de date
+    //  DTO-ul in entitate noua
     public Vehicle toEntity(com.autofleet.autofleet_ai.dto.CreateVehicleDTO dto) {
         if (dto == null) {
             return null;
@@ -112,7 +112,6 @@ public class VehicleMapper {
 
         Vehicle vehicle;
 
-        // Decidem ce tip de obiect instantiem pe baza string-ului din frontend
         switch (dto.engineType().toUpperCase()) {
             case "ELECTRIC" -> {
                 ElectricVehicle ev = new ElectricVehicle();
@@ -137,17 +136,14 @@ public class VehicleMapper {
             default -> throw new IllegalArgumentException("Tip de motor necunoscut: " + dto.engineType());
         }
 
-        // Setam datele comune pe care le au toate masinile (din clasa parinte)
+        // setam datele comune pe care le au toate masinile
         vehicle.setManufacturer(dto.manufacturer());
         vehicle.setModel(dto.model());
         vehicle.setLicensePlate(dto.licensePlate());
         vehicle.setMileage(dto.mileage());
         vehicle.setHorsePower(dto.horsePower());
-
-        // Cand cream o masina noua in sistem, statusul implicit este OK si scorul 100
         vehicle.setStatus(VehicleStatus.OK);
         vehicle.setHealthScore(100);
-        // Generam un VIN fals temporar pentru design (in productie ar veni din DTO)
         vehicle.setVin("AUTO" + System.currentTimeMillis() + "FLT");
 
         return vehicle;

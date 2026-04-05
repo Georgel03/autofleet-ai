@@ -6,7 +6,7 @@ import api from '../api/axiosConfig';
 const Dashboard = () => {
   const navigate = useNavigate();
   
-  // --- STĂRI PENTRU PAGINARE, SORTARE, CĂUTARE ---
+  
   const [vehicles, setVehicles] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
@@ -14,24 +14,24 @@ const Dashboard = () => {
   const [sortBy, setSortBy] = useState('id'); 
   const [sortDir, setSortDir] = useState('DESC'); 
   
-  // --- STARE PENTRU STATISTICI (Total KM și Mașini Critice) ---
+  
   const [fleetStats, setFleetStats] = useState({totalCars: 0,  totalMileage: 0, criticalCount: 0 });
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // Stări pentru Modale și Meniuri
+  
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState(null);
   const [vehicleToDelete, setVehicleToDelete] = useState(null);
   const [vehicleToEdit, setVehicleToEdit] = useState(null);
 
-  // Formular Adăugare
+  
   const [newVehicle, setNewVehicle] = useState({
     manufacturer: '', model: '', licensePlate: '', mileage: '', engineType: 'THERMAL', 
     horsePower: '', batteryCapacity: '', maxRange: '', displacement: '', cylinders: '', fuelType: 'Gasoline'
   });
 
-  // Funcția principală de FETCH Mașini
+
   const fetchVehicles = async () => {
     try {
       setIsLoading(true);
@@ -55,7 +55,7 @@ const Dashboard = () => {
     }
   };
 
-  // NOU: Funcția de FETCH Statistici
+
   const fetchStats = async () => {
     try {
       const response = await api.get('/vehicles/stats');
@@ -65,7 +65,7 @@ const Dashboard = () => {
     }
   };
 
-  // Reîncărcăm datele la schimbarea paginii/sortării
+ 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       fetchVehicles();
@@ -73,7 +73,7 @@ const Dashboard = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [currentPage, sortBy, sortDir, searchQuery]);
 
-  // Aducem statisticile globale o singură dată la încărcarea paginii
+ 
   useEffect(() => {
     fetchStats();
   }, []);
@@ -97,7 +97,7 @@ const Dashboard = () => {
     return sortDir === 'ASC' ? <ChevronUp className="inline w-3 h-3 ml-1 text-neon-pink" /> : <ChevronDown className="inline w-3 h-3 ml-1 text-neon-pink" />;
   };
 
-  // --- ACȚIUNI CRUD ---
+  
   const handleAddVehicle = async (e) => {
     e.preventDefault();
     try {
@@ -128,7 +128,7 @@ const Dashboard = () => {
       setIsAddModalOpen(false);
       setNewVehicle({ manufacturer: '', model: '', licensePlate: '', mileage: '', engineType: 'THERMAL', horsePower: '', batteryCapacity: '', maxRange: '', displacement: '', cylinders: '', fuelType: 'Gasoline' });
       fetchVehicles(); 
-      fetchStats(); // Actualizăm totalul de km după adăugare
+      fetchStats(); 
     } catch (error) {
       console.error("Eroare la adăugarea mașinii:", error);
       alert("Nu s-a putut adăuga mașina. Verifică setările CSRF din Spring Security.");
@@ -142,7 +142,7 @@ const Dashboard = () => {
       setVehicleToDelete(null);
       if (vehicles.length === 1 && currentPage > 0) setCurrentPage(currentPage - 1);
       else fetchVehicles(); 
-      fetchStats(); // Actualizăm totalul de km după ștergere
+      fetchStats(); 
     } catch (error) {
       console.error("Eroare la ștergere:", error);
     }
@@ -161,7 +161,7 @@ const Dashboard = () => {
       await api.patch(`/vehicles/${vehicleToEdit.id}`, payload);
       setVehicleToEdit(null);
       fetchVehicles(); 
-      fetchStats(); // Actualizăm totalul de km după modificare
+      fetchStats();
     } catch (error) {
       console.error("Eroare la modificare:", error);
       alert("Eroare la salvarea modificărilor.");
@@ -181,7 +181,7 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-neon-dark text-gray-300 flex font-mono" onClick={() => activeMenuId && setActiveMenuId(null)}>
       
-      {/* SIDEBAR */}
+      
       <aside className="w-64 border-r border-gray-800 bg-[#0a0a0f] flex flex-col z-20 shrink-0">
         <div className="p-6">
           <h1 className="text-xl font-bold text-neon-pink flex items-center gap-2 tracking-wider">
@@ -209,10 +209,10 @@ const Dashboard = () => {
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
+      
       <main className="flex-1 flex flex-col relative overflow-hidden">
         
-        {/* HEADER */}
+       
         <header className="h-20 border-b border-gray-800 flex items-center justify-between px-8 bg-[#0a0a0f]/50 backdrop-blur z-10">
           <div className="flex items-center gap-8">
             <h2 className="text-white text-lg font-bold border-b-2 border-neon-pink pb-1">Fleet Overview</h2>
@@ -245,10 +245,10 @@ const Dashboard = () => {
           </div>
         </header>
 
-        {/* DASHBOARD WIDGETS */}
+        
         <div className="p-8 overflow-y-auto flex-1 bg-neon-dark">
           
-          {/* STATS CARDS */}
+          
           <div className="grid grid-cols-3 gap-6 mb-8">
             <div className="bg-neon-panel border border-gray-800 p-6 rounded-lg relative overflow-hidden">
               <div className="flex justify-between items-start mb-4">
@@ -269,7 +269,7 @@ const Dashboard = () => {
                 <span className="text-red-500 text-[10px] tracking-widest uppercase">Critical Status</span>
               </div>
               <p className="text-gray-500 text-xs tracking-wider uppercase mb-1">Maintenance Required</p>
-              {/* DATE REALE DIN DB */}
+             
               <h3 className="text-4xl font-bold text-red-500">{fleetStats.criticalCount || 0}</h3>
             </div>
 
@@ -282,13 +282,13 @@ const Dashboard = () => {
               </div>
               <p className="text-gray-500 text-xs tracking-wider uppercase mb-1">Total Fleet Mileage</p>
               <h3 className="text-4xl font-bold text-white flex items-end gap-2">
-                {/* DATE REALE DIN DB */}
+               
                 {(fleetStats.totalMileage || 0).toLocaleString()} <span className="text-sm text-gray-500 font-normal mb-1">km</span>
               </h3>
             </div>
           </div>
 
-          {/* TABLE SECTION */}
+         
           <div className="bg-neon-panel border border-gray-800 rounded-lg flex flex-col mb-16">
             <div className="p-6 border-b border-gray-800 flex justify-between items-center">
               <div>
@@ -362,7 +362,7 @@ const Dashboard = () => {
                               vehicle.status === 'WARNING' ? 'bg-yellow-400 shadow-[0_0_8px_#facc15]' : 
                               'bg-neon-cyan shadow-[0_0_8px_#00ffcc]'
                             }`}></span> 
-                            {/* Afișăm textul frumos, înlocuind underscore-ul cu spațiu pentru UI */}
+                           
                             {vehicle.status ? vehicle.status.replace('_', ' ') : 'OK'}
                           </span>
                         </td>
@@ -394,7 +394,7 @@ const Dashboard = () => {
               </table>
             </div>
             
-            {/* PAGINARE (SUBSOL TABEL) */}
+            
             <div className="p-4 border-t border-gray-800 bg-gray-900/20 flex justify-between items-center text-[10px] tracking-widest font-mono uppercase text-gray-500">
               <div>
                 SHOWING {vehicles.length > 0 ? currentPage * 10 + 1 : 0} - {Math.min((currentPage + 1) * 10, fleetStats.totalCars || 0)} OF {fleetStats.totalCars || 0} UNITS
@@ -433,8 +433,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* ---------------------------------------------------------------------- */}
-        {/* MODAL ADĂUGARE VEHICUL */}
+        
         {isAddModalOpen && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
              <div className="bg-[#12131c] border border-neon-pink/40 rounded-lg shadow-[0_0_30px_rgba(255,0,85,0.15)] w-full max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -533,8 +532,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* ---------------------------------------------------------------------- */}
-        {/* MODAL EDITARE VEHICUL */}
+        
         {vehicleToEdit && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
             <div className="bg-[#12131c] border border-neon-pink/30 rounded-lg shadow-[0_0_40px_rgba(255,0,85,0.1)] w-full max-w-lg overflow-hidden">
@@ -595,8 +593,7 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* ---------------------------------------------------------------------- */}
-        {/* MODAL ȘTERGERE VEHICUL */}
+        
         {vehicleToDelete && (
           <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
             <div className="bg-neon-panel border border-red-900 rounded-lg shadow-[0_0_50px_rgba(255,0,0,0.15)] w-full max-w-md overflow-hidden">

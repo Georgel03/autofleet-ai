@@ -28,11 +28,9 @@ const VehicleDetail = () => {
     cost: ''
   });
 
-  // Aducem datele mașinii si istoricul de mentenanta
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      // Folosim Promise.all pentru a face ambele request-uri în același timp (mai rapid!)
       const [vehicleRes, maintenanceRes] = await Promise.all([
         api.get(`/vehicles/${id}`),
         api.get(`/maintenance/vehicle/${id}`)
@@ -95,7 +93,6 @@ const VehicleDetail = () => {
     }
   };
 
-  // Salvăm sau modificăm o înregistrare de service
   const handleSaveMaintenance = async (e) => {
     e.preventDefault();
     try {
@@ -169,7 +166,7 @@ const VehicleDetail = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-gray-300 flex font-sans">
       
-      {/* SIDEBAR */}
+     
       <aside className="w-64 border-r border-gray-800 flex flex-col z-20 shrink-0">
         <div className="p-6">
           <h1 className="text-xl font-bold text-neon-pink flex items-center gap-2 tracking-wider font-mono"><Car className="w-6 h-6" />AutoFleet AI</h1>
@@ -180,10 +177,10 @@ const VehicleDetail = () => {
         </nav>
       </aside>
 
-      {/* MAIN CONTENT */}
+      
       <main className="flex-1 flex flex-col overflow-y-auto">
         
-        {/* HEADER TOP NAV */}
+        
         <header className="h-16 border-b border-gray-800 flex items-center justify-between px-8 bg-[#0a0a0f]/90 sticky top-0 z-10">
           <div className="flex items-center gap-4 text-xs font-mono tracking-widest text-gray-500 uppercase">
             <button onClick={() => navigate('/dashboard')} className="hover:text-neon-cyan transition-colors flex items-center"><ChevronLeft className="w-4 h-4 mr-1"/> Fleet</button>
@@ -197,7 +194,7 @@ const VehicleDetail = () => {
 
         <div className="p-8 max-w-7xl mx-auto w-full">
           
-          {/* VEHICLE TITLE HEADER */}
+          
           <div className="flex justify-between items-end mb-8">
             <div className="flex items-center gap-6">
               <div className="w-24 h-24 bg-gray-900 border border-neon-cyan/30 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(0,255,204,0.1)]">
@@ -228,18 +225,16 @@ const VehicleDetail = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* LEFT COLUMN: AI & VITALS */}
+            
             <div className="space-y-6">
-              
-              {/* AI PREDICTION CARD */}
-              {/* AI PREDICTION CARD */}
+            
               <div className="bg-[#12131c] border border-neon-pink/50 rounded-xl p-6 relative overflow-hidden shadow-[0_0_30px_rgba(255,0,85,0.05)] min-h-[300px] flex flex-col">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-neon-pink/10 blur-[50px] rounded-full pointer-events-none"></div>
                 
                 <div className="flex justify-between items-center mb-6">
                   <span className="bg-neon-pink text-black text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">AI Prediction</span>
                   
-                  {/* Arătăm butoane diferite în funcție de stare */}
+                  
                   {!isAILoading && (
                     <button 
                       onClick={handleRunAIDiagnostics}
@@ -251,7 +246,7 @@ const VehicleDetail = () => {
                 </div>
 
                 {isAILoading ? (
-                  /* STAREA 1: SE ÎNCARCĂ */
+                  
                   <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
                     <RefreshCw className="w-10 h-10 text-neon-pink animate-spin" />
                     <div>
@@ -260,7 +255,7 @@ const VehicleDetail = () => {
                     </div>
                   </div>
                 ) : aiPrediction ? (
-                  /* STAREA 2: AVEM DATE DE LA AI */
+                  
                   <div className="flex-1 flex flex-col">
                     <div className="flex items-center gap-3 mb-3">
                       <h3 className="text-2xl font-bold text-white leading-tight">{aiPrediction.predictedComponent || aiPrediction.predictedComponent}</h3>
@@ -290,7 +285,7 @@ const VehicleDetail = () => {
                     </button>
                   </div>
                 ) : (
-                  /* STAREA 3: FĂRĂ PREDICȚIE ÎNCĂ */
+                  
                   <div className="flex-1 flex flex-col items-center justify-center text-center">
                     <BarChart3 className="w-12 h-12 text-gray-700 mb-4" />
                     <p className="text-gray-400 text-sm mb-6">No diagnostic data generated yet. Run the AI engine to analyze current vehicle telemetry.</p>
@@ -304,7 +299,7 @@ const VehicleDetail = () => {
                 )}
               </div>
 
-              {/* VITALS WIDGETS */}
+             
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#12131c] border border-gray-800 p-5 rounded-xl">
                   <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-2 font-mono">Fuel / Energy Eff</p>
@@ -319,7 +314,7 @@ const VehicleDetail = () => {
               </div>
             </div>
 
-            {/* RIGHT COLUMN: MAINTENANCE HISTORY (Folosește state-ul separat) */}
+           
             <div className="lg:col-span-2">
               <div className="bg-[#12131c] border border-gray-800 rounded-xl h-full flex flex-col">
                 
@@ -370,7 +365,7 @@ const VehicleDetail = () => {
             </div>
           </div>
 
-          {/* FOOTER INFO BAR */}
+          
           <div className="mt-8 pt-6 border-t border-gray-800 grid grid-cols-4 gap-4 font-mono text-xs">
             <div>
               <p className="text-gray-600 tracking-widest uppercase mb-1">VIN</p>

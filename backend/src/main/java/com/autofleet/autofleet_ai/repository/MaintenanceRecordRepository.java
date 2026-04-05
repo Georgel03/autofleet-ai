@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Long> {
 
-    // scoatem tot istoricul doar pentru o anumita masina
+
     List<MaintenanceRecord> findByVehicleIdOrderByServiceDateDesc(Long vehicleId);
 }

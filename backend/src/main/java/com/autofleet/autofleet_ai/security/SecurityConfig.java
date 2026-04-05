@@ -30,25 +30,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // dezactivam CSRF pentru ca aplicatia noastra este un REST API stateless (nu folosește cookie-uri de sesiune)
+                // dezactivam CSRF pentru ca aplicatia noastra este un REST API stateless
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // configurăm regulile de acces
+                // configuram regulile de acces
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Orice request către rutele de autentificare este PUBLIC
-                        .anyRequest().authenticated()                // Restul aplicației (/api/vehicles, /api/ai) este PRIVAT
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
                 )
 
-                // setăm managementul sesiunii pe STATELESS (serverul uită cine ești imediat după ce ți-a răspuns)
+                // setam managementul sesiunii pe stateless
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // ii spunem ce provider de autentificare să folosească (cel definit de noi în ApplicationConfig)
+                // ii spunem ce provider de autentificare să foloseasca
                 .authenticationProvider(authenticationProvider)
 
-                // inserăm filtrul nostru JWT exact înainte de filtrul standard de username/parolă din Spring
+                // inseram filtrul nostru JWT exact inainte de filtrul standard de username/parola din Spring
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -57,16 +57,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Permitem cereri doar de la serverul nostru de React (Vite folosește portul 5173)
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        // Permitem metodele standard de comunicare
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        // Permitem trimiterea token-ului JWT și a datelor JSON
+        // permitem trimiterea token-ului JWT și a datelor JSON
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplicăm aceste reguli pentru absolut toate rutele noastre (/**)
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }

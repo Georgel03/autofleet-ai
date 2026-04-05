@@ -43,7 +43,7 @@ public class AIPredictionService {
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
 
-        // 1. Pregatim istoricul de mentenanta ca text pentru AI
+        // istoricul de mentenanta ca text pentru AI
         String serviceHistoryText = vehicle.getMaintenanceHistory().stream()
                 .map(record -> String.format("- Data: %s, Descriere: %s, Cost: %.2f",
                         record.getServiceDate(), record.getDescription(), record.getCost()))
@@ -53,7 +53,7 @@ public class AIPredictionService {
             serviceHistoryText = "Nu exista nicio intrare in service pana acum.";
         }
 
-        // 2. Construim Prompt-ul (Contextul "Expert" pentru AI)
+        // construim prompt-ul
         String prompt = String.format(
                 "Te rog analizeaza urmatorul vehicul din flota noastra:\n" +
                         "- Marca si Model: %s %s\n" +
@@ -72,7 +72,7 @@ public class AIPredictionService {
                 vehicle.getHealthScore(), serviceHistoryText
         );
 
-        // 3. Payload-ul pentru OpenAI cu System Prompt
+        // payload-ul pentru ai cu prompt
         Map<String, Object> requestBody = Map.of(
                 "model", "gpt-5.4",
                 "response_format", Map.of("type", "json_object"),
@@ -90,7 +90,7 @@ public class AIPredictionService {
         );
 
         try {
-            // 4. Apelul real WebClient
+            // apelul real WebClient
             String response = webClient.post()
                     .uri("/chat/completions")
                     .header("Authorization", "Bearer " + apiKey)
@@ -99,7 +99,7 @@ public class AIPredictionService {
                     .bodyToMono(String.class)
                     .block();
 
-            // 5. Parsare si Salvare
+            // parsare si salvare
             JsonNode root = objectMapper.readTree(response);
             String content = root.path("choices").get(0).path("message").path("content").asText();
             JsonNode aiJson = objectMapper.readTree(content);

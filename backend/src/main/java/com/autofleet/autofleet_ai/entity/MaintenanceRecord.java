@@ -15,7 +15,7 @@ public class MaintenanceRecord {
 
     private LocalDate serviceDate;
 
-    private String description; // ex: Oil change
+    private String description;
 
     private Double cost;
 

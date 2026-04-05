@@ -15,19 +15,18 @@ public class AIPrediction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String predictedComponent; // ex: Timing Belt Replacement
+    private String predictedComponent;
 
-    private String urgency; // HIGH, MEDIUM, LOW
+    private String urgency;
 
     @Column(columnDefinition = "TEXT")
-    private String reasoning; // explicatia generata de AI (Reasoning Engine)
+    private String reasoning;
 
-    private Integer failureProbability; // Procentul (ex: 74%)
+    private Integer failureProbability;
 
-    // Data la care a fost generată predicția
     private LocalDateTime createdAt;
 
-    @ManyToOne(fetch = FetchType.LAZY) // eficienta: nu incarcam masina de fiecare data
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id")
     private Vehicle vehicle;
 

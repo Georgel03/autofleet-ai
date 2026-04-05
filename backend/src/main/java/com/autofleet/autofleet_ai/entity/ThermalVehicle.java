@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class ThermalVehicle extends Vehicle {
-    private Integer displacement; // cm³
-    private Integer cylinders;    // ex: 4
-    private String fuelType;      // Diesel/Gasoline
+    private Integer displacement;
+    private Integer cylinders;
+    private String fuelType;
 }

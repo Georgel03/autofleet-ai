@@ -32,14 +32,10 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    // --- Metode obligatorii din interfața UserDetails ---
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
-
-    // Spring Security foloseste "username" intern, noi il vom mappa la email-ul nostru
     @Override
     public String getUsername() {
         return email;
@@ -47,12 +43,12 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Poti adauga logica in viitor daca vrei conturi care expira
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Pentru ban-uri
+        return true;
     }
 
     @Override
@@ -62,6 +58,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true; // Pentru confirmarea adresei de email
+        return true;
     }
 }

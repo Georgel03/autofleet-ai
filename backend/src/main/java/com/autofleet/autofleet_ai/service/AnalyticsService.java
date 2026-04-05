@@ -38,7 +38,7 @@ public class AnalyticsService {
 
         List<Vehicle> allVehicles = vehicleRepository.findAllListByUser(user);
 
-        // 1. costuri lunare (ultimele 7 luni)
+        // costuri lunare
         LocalDate now = LocalDate.now();
         Map<Month, Double> monthlyCosts = new LinkedHashMap<>();
 
@@ -66,7 +66,7 @@ public class AnalyticsService {
                 ))
                 .toList();
 
-        // 2. top 5 vehicule costisitoare
+        //top 5 vehicule costisitoare
         List<AnalyticsDashboardDTO.TopVehicleDTO> topVehicles = allVehicles.stream()
                 .map(vehicle -> {
                     // SOLUȚIA: Am adăugat verificarea null
@@ -84,7 +84,7 @@ public class AnalyticsService {
                 })
                 .toList();
 
-        // 3. costuri medii de mentenanta pe tip de motorizare
+        // costuri medii de mentenanta pe tip de motorizare
         double thermalCost = 0, hybridCost = 0, electricCost = 0;
         int thermalCount = 0, hybridCount = 0, electricCount = 0;
 

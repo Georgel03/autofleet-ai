@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MaintenanceRecordMapper {
 
-    // Transformam Entitatea in DTO pentru a o trimite la frontend
+    // parsam entitatea in DTO pentru a o trimite la frontend
     public MaintenanceRecordDTO toDto(MaintenanceRecord record) {
         if (record == null) {
             return null;
@@ -22,8 +22,7 @@ public class MaintenanceRecordMapper {
         );
     }
 
-    // Transformam DTO-ul primit din formular in Entitate
-    // Observa ca primim si obiectul Vehicle complet, scos de Service din baza de date
+    // parsam DTO-ul primit din formular in entitate/clasa
     public MaintenanceRecord toEntity(CreateMaintenanceRecordDTO dto, Vehicle vehicle) {
         if (dto == null) {
             return null;
@@ -34,7 +33,6 @@ public class MaintenanceRecordMapper {
         record.setDescription(dto.description());
         record.setCost(dto.cost());
 
-        // Aici facem legatura in baza de date (Foreign Key)
         record.setVehicle(vehicle);
 
         return record;

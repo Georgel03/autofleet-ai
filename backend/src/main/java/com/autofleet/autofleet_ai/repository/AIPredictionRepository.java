@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface AIPredictionRepository extends JpaRepository<AIPrediction, Long> {
 
-    // aducem predictiile unei masini, de la cea mai noua la cea mai veche
     List<AIPrediction> findByVehicleIdOrderByCreatedAtDesc(Long vehicleId);
 }
