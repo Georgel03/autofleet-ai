@@ -21,6 +21,7 @@ public record VehicleResponseDTO(
         Integer displacement,
         Integer cylinders,
         String fuelType,
+        Integer hydrogenTankCapacity,
 
         // Date agregate pentru UI
         String engineSummary, // ex: "1.8L 4-Cylinder Hybrid"

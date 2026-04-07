@@ -63,6 +63,14 @@ public class VehicleController {
         return ResponseEntity.ok(vehiclePage);
     }
 
+    @GetMapping("mileage")
+    public ResponseEntity<List<VehicleResponseDTO>> getVehiclesWithMileageGreaterThan(
+            @RequestParam Long mileage
+    ) {
+        List<VehicleResponseDTO> vehicles = vehicleService.findVehiclesWithMileageGreaterThan(mileage);
+        return ResponseEntity.ok(vehicles);
+    }
+
     @GetMapping("/stats")
     public ResponseEntity<FleetStatsDTO> getFleetStats() {
         FleetStatsDTO stats = vehicleService.getFleetStats();

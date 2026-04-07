@@ -20,8 +20,10 @@ public class VehicleMapper {
         Integer displacement = null;
         Integer cylinders = null;
         String fuelType = null;
+        Integer hydrogenTankCapacity = null;
         String vehicleType = "UNKNOWN";
         String engineSummary = "Unknown Engine";
+
 
         switch (vehicle) {
             case ElectricVehicle e -> {
@@ -47,6 +49,11 @@ public class VehicleMapper {
                         (cylinders != null ? cylinders + "-Cylinder " : "") +
                         (fuelType != null ? fuelType : "Thermal");
             }
+            case HydrogenVehicle h -> {
+                vehicleType = "HYDROGEN";
+                hydrogenTankCapacity = h.getHydrogenTankCapacity();
+                engineSummary = (hydrogenTankCapacity != null ? hydrogenTankCapacity + "L " : "") + "Hydrogen";
+            }
             default -> {}
         }
 
@@ -67,6 +74,7 @@ public class VehicleMapper {
                 displacement,
                 cylinders,
                 fuelType,
+                hydrogenTankCapacity,
                 engineSummary,
                 getLatestPredictionDto(vehicle.getAiPredictions()),
                 mapMaintenanceHistory(vehicle.getMaintenanceHistory())
@@ -132,6 +140,11 @@ public class VehicleMapper {
                 tv.setCylinders(dto.cylinders());
                 tv.setFuelType(dto.fuelType());
                 vehicle = tv;
+            }
+            case "HYDROGEN" -> {
+                HydrogenVehicle hv = new HydrogenVehicle();
+                hv.setHydrogenTankCapacity(dto.hydrogenTankCapacity());
+                vehicle = hv;
             }
             default -> throw new IllegalArgumentException("Tip de motor necunoscut: " + dto.engineType());
         }

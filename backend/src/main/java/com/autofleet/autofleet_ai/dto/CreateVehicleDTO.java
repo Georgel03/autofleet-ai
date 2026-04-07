@@ -12,12 +12,13 @@ public record CreateVehicleDTO(
         @NotNull(message = "Kilometrajul nu poate fi null")
         @PositiveOrZero(message = "Kilometrajul trebuie sa fie pozitiv") Integer mileage,
 
-        @NotBlank(message = "Tipul motorului (ELECTRIC, HYBRID, THERMAL) este obligatoriu") String engineType,
+        @NotBlank(message = "Tipul motorului (ELECTRIC, HYBRID, THERMAL, HYDROGEN) este obligatoriu") String engineType,
 
         Integer horsePower,
         Integer batteryCapacity,
         Integer maxRange,
         Integer displacement,
         Integer cylinders,
-        String fuelType
+        String fuelType,
+        Integer hydrogenTankCapacity
 ) {}

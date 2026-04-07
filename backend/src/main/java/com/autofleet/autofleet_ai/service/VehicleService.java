@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class VehicleService {
 
@@ -71,6 +73,11 @@ public class VehicleService {
             throw new AccessDeniedException("Nu ai permisiunea sa accesezi aceasta masina!");
         }
         return vehicleMapper.toDto(vehicle);
+    }
+
+    public List<VehicleResponseDTO> findVehiclesWithMileageGreaterThan(Long mileage) {
+        List<Vehicle> vehicleList = vehicleRepository.findByMileageGreaterThan(mileage);
+        return vehicleList.stream().map(vehicleMapper::toDto).toList();
     }
 
 
