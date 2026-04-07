@@ -22,6 +22,8 @@ public abstract class Vehicle {
 
     private Integer mileage;
 
+    private Integer fabricationYear;
+
     @Enumerated(EnumType.STRING)
     private VehicleStatus status;
 

@@ -9,11 +9,13 @@ public record VehicleResponseDTO(
         String model,
         String licensePlate,
         Integer mileage,
+        Integer fabricationYear,
         String status,
         Integer healthScore,
         String vin,
         Integer horsePower,
         String vehicleType, // "ELECTRIC", "HYBRID", "THERMAL"
+
 
         // Date specifice (optionale in functie de tip)
         Integer batteryCapacity,

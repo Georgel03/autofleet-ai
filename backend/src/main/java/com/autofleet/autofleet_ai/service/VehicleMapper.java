@@ -57,6 +57,7 @@ public class VehicleMapper {
                 vehicle.getModel(),
                 vehicle.getLicensePlate(),
                 vehicle.getMileage(),
+                vehicle.getFabricationYear(),
                 vehicle.getStatus() != null ? vehicle.getStatus().name() : null,
                 vehicle.getHealthScore(),
                 vehicle.getVin(),
@@ -78,7 +79,7 @@ public class VehicleMapper {
         if (predictions == null || predictions.isEmpty()) {
             return null;
         }
-        AIPrediction latest = predictions.get(0);
+        AIPrediction latest = predictions.getFirst();
         return new AIPredictionDTO(
                 latest.getId(),
                 latest.getPredictedComponent(),
@@ -141,6 +142,7 @@ public class VehicleMapper {
         vehicle.setModel(dto.model());
         vehicle.setLicensePlate(dto.licensePlate());
         vehicle.setMileage(dto.mileage());
+        vehicle.setFabricationYear(dto.fabricationYear());
         vehicle.setHorsePower(dto.horsePower());
         vehicle.setStatus(VehicleStatus.OK);
         vehicle.setHealthScore(100);
