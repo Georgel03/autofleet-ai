@@ -1,11 +1,9 @@
 package com.autofleet.autofleet_ai.service;
 
-import com.autofleet.autofleet_ai.dto.CreateVehicleDTO;
-import com.autofleet.autofleet_ai.dto.FleetStatsDTO;
-import com.autofleet.autofleet_ai.dto.UpdateVehicleDTO;
-import com.autofleet.autofleet_ai.dto.VehicleResponseDTO;
+import com.autofleet.autofleet_ai.dto.*;
 import com.autofleet.autofleet_ai.entity.User;
 import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.entity.VehicleStatus;
 import com.autofleet.autofleet_ai.repository.UserRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import org.springframework.data.domain.Page;
@@ -35,6 +33,14 @@ public class VehicleService {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost gasit in baza de date"));
+    }
+
+    public VehicleResponseDTO updateVehicleStatus(Long id, VehicleStatus newVehicleStatus) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
+        vehicle.setStatus(newVehicleStatus);
+        Vehicle updatedStatusVehicle = vehicleRepository.save(vehicle);
+        return vehicleMapper.toDto(updatedStatusVehicle);
     }
 
 

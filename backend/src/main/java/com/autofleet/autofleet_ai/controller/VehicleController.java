@@ -1,6 +1,7 @@
 package com.autofleet.autofleet_ai.controller;
 
 import com.autofleet.autofleet_ai.dto.CreateVehicleDTO;
+import com.autofleet.autofleet_ai.dto.UpdateVehicleStatusDTO;
 import com.autofleet.autofleet_ai.dto.VehicleResponseDTO;
 import com.autofleet.autofleet_ai.service.VehicleService;
 import jakarta.validation.Valid;
@@ -82,6 +83,16 @@ public class VehicleController {
         VehicleResponseDTO newVehicle = vehicleService.createVehicle(createDTO);
         // Returnam codul HTTP 201 (Created) si masina nou adaugata
         return ResponseEntity.status(HttpStatus.CREATED).body(newVehicle);
+    }
+
+    // actualize the status of a vehicle by ID
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<VehicleResponseDTO> updateVehicleStatus(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateVehicleStatusDTO updateVehicleStatusDTO) {
+        VehicleResponseDTO updatedStatusVehicle = vehicleService.updateVehicleStatus(id, updateVehicleStatusDTO.getStatus());
+        return ResponseEntity.ok(updatedStatusVehicle);
+
     }
 
     // actualizam partial o masina existenta
