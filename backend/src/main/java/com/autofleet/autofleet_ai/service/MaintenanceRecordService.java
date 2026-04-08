@@ -5,6 +5,8 @@ import com.autofleet.autofleet_ai.dto.MaintenanceRecordDTO;
 import com.autofleet.autofleet_ai.dto.UpdateMaintenanceRecordDTO;
 import com.autofleet.autofleet_ai.entity.MaintenanceRecord;
 import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.exception.BusinessRuleException;
+import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.MaintenanceRecordRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import org.springframework.stereotype.Service;
@@ -47,7 +49,7 @@ public class MaintenanceRecordService {
     public MaintenanceRecordDTO createRecord(CreateMaintenanceRecordDTO createDTO) {
         // Cautam masina in baza de date folosind ID-ul din DTO
         Vehicle vehicle = vehicleRepository.findById(createDTO.vehicleId())
-                .orElseThrow(() -> new IllegalArgumentException("Masina cu ID-ul " + createDTO.vehicleId() + " nu exista!"));
+                .orElseThrow(() -> new BusinessRuleException("Masina cu ID-ul " + createDTO.vehicleId() + " nu exista!"));
 
         // Transformam si setam relatia
         MaintenanceRecord newRecord = maintenanceMapper.toEntity(createDTO, vehicle);
@@ -60,7 +62,7 @@ public class MaintenanceRecordService {
     @Transactional
     public MaintenanceRecordDTO updateRecord(Long id, UpdateMaintenanceRecordDTO updateDTO) {
         MaintenanceRecord existingRecord = maintenanceRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Inregistrarea de service cu ID-ul " + id + " nu a fost gasita!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inregistrarea de service cu ID-ul " + id + " nu a fost gasita!"));
 
         if (updateDTO.serviceDate() != null) {
             existingRecord.setServiceDate(updateDTO.serviceDate());
@@ -80,7 +82,7 @@ public class MaintenanceRecordService {
     @Transactional
     public void deleteRecord(Long id) {
         if (!maintenanceRepository.existsById(id)) {
-            throw new IllegalArgumentException("Inregistrarea de service nu a fost gasita!");
+            throw new ResourceNotFoundException("Inregistrarea de service nu a fost gasita!");
         }
         maintenanceRepository.deleteById(id);
     }

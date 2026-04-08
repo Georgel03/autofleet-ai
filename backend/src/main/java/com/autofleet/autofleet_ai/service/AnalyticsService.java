@@ -2,6 +2,7 @@ package com.autofleet.autofleet_ai.service;
 
 import com.autofleet.autofleet_ai.dto.AnalyticsDashboardDTO;
 import com.autofleet.autofleet_ai.entity.*;
+import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.UserRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,7 +31,7 @@ public class AnalyticsService {
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost gasit"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit"));
     }
 
     public AnalyticsDashboardDTO getDashboardData() {
@@ -69,7 +70,7 @@ public class AnalyticsService {
         //top 5 vehicule costisitoare
         List<AnalyticsDashboardDTO.TopVehicleDTO> topVehicles = allVehicles.stream()
                 .map(vehicle -> {
-                    // SOLUȚIA: Am adăugat verificarea null
+                    //am adaugat verificarea null
                     double totalCost = vehicle.getMaintenanceHistory() == null ? 0.0 :
                             vehicle.getMaintenanceHistory().stream().mapToDouble(MaintenanceRecord::getCost).sum();
                     return new AbstractMap.SimpleEntry<>(vehicle, totalCost);

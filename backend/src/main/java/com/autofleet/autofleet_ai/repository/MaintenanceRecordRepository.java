@@ -9,6 +9,5 @@ import java.util.List;
 @Repository
 public interface MaintenanceRecordRepository extends JpaRepository<MaintenanceRecord, Long> {
 
-
     List<MaintenanceRecord> findByVehicleIdOrderByServiceDateDesc(Long vehicleId);
 }

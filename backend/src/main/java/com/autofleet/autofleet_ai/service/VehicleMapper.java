@@ -1,15 +1,17 @@
 package com.autofleet.autofleet_ai.service;
 
 import com.autofleet.autofleet_ai.dto.AIPredictionDTO;
+import com.autofleet.autofleet_ai.dto.CreateVehicleDTO;
 import com.autofleet.autofleet_ai.dto.MaintenanceRecordDTO;
 import com.autofleet.autofleet_ai.dto.VehicleResponseDTO;
 import com.autofleet.autofleet_ai.entity.*;
+import com.autofleet.autofleet_ai.exception.BusinessRuleException;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Component // spring creeza un obiect din clasa asta ca sa-l poata injecta in Service
+@Component // spring creeza un obiect din clasa asta ca sa-l poata injecta in service
 public class VehicleMapper {
 
     public VehicleResponseDTO toDto(Vehicle vehicle) {
@@ -78,7 +80,7 @@ public class VehicleMapper {
         if (predictions == null || predictions.isEmpty()) {
             return null;
         }
-        AIPrediction latest = predictions.get(0);
+        AIPrediction latest = predictions.getFirst();
         return new AIPredictionDTO(
                 latest.getId(),
                 latest.getPredictedComponent(),
@@ -105,7 +107,7 @@ public class VehicleMapper {
     }
 
     //  DTO-ul in entitate noua
-    public Vehicle toEntity(com.autofleet.autofleet_ai.dto.CreateVehicleDTO dto) {
+    public Vehicle toEntity(CreateVehicleDTO dto) {
         if (dto == null) {
             return null;
         }
@@ -133,7 +135,7 @@ public class VehicleMapper {
                 tv.setFuelType(dto.fuelType());
                 vehicle = tv;
             }
-            default -> throw new IllegalArgumentException("Tip de motor necunoscut: " + dto.engineType());
+            default -> throw new BusinessRuleException("Tip de motor necunoscut: " + dto.engineType());
         }
 
         // setam datele comune pe care le au toate masinile

@@ -2,6 +2,7 @@ package com.autofleet.autofleet_ai.service;
 
 import com.autofleet.autofleet_ai.entity.MaintenanceRecord;
 import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+
+ // serviciu pentru exportul datelor in format Excel.
 
 @Service
 public class ExcelExportService {
@@ -19,10 +23,11 @@ public class ExcelExportService {
         this.vehicleRepository = vehicleRepository;
     }
 
+    // genereaza un raport Excel detaliat pentru un vehicul specificat prin ID.
     public byte[] generateVehicleReport(Long vehicleId) throws IOException {
 
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
-                .orElseThrow(() -> new IllegalArgumentException("Vehicle not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found!"));
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Vehicle Report");

@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.module.ResolutionException;
+import java.util.List;
 
 @Service
 public class VehicleService {
@@ -129,5 +130,14 @@ public class VehicleService {
             throw new AccessDeniedException("Nu poti sterge masina altui utilizator!");
         }
         vehicleRepository.deleteById(id);
+    }
+
+
+    @Transactional
+    public List<VehicleResponseDTO> getCarsWithWarningStatusAndMoreThanOnePred() {
+        User user = getCurrentUser();
+
+        List<Vehicle> vehicleList = vehicleRepository.getWarningVehiclesWithMoreThanOnePredByUser(user);
+        return vehicleList.stream().map(vehicleMapper::toDto).toList();
     }
 }

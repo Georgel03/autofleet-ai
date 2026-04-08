@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
@@ -35,6 +37,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     @Query("SELECT COUNT(v) FROM Vehicle v WHERE v.status = 'MAINTENANCE_REQUIRED' AND v.user = :user")
     Long getCriticalVehiclesCountByUser(@Param("user") User user);
 
+    @Query("SELECT v FROM Vehicle v WHERE v.status = 'WARNING' AND v.user = :user AND SIZE(v.aiPredictions) > 1")
+    List<Vehicle> getWarningVehiclesWithMoreThanOnePredByUser(@Param("user") User user);
+
     @Query("SELECT v FROM Vehicle v WHERE v.user = :user")
-    java.util.List<Vehicle> findAllListByUser(@Param("user") User user);
+    List<Vehicle> findAllListByUser(@Param("user") User user);
 }
