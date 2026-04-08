@@ -6,6 +6,8 @@ import com.autofleet.autofleet_ai.dto.UpdateVehicleDTO;
 import com.autofleet.autofleet_ai.dto.VehicleResponseDTO;
 import com.autofleet.autofleet_ai.entity.User;
 import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.exception.BusinessRuleException;
+import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.UserRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.lang.module.ResolutionException;
 
 @Service
 public class VehicleService {
@@ -34,7 +38,7 @@ public class VehicleService {
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Utilizatorul nu a fost gasit in baza de date"));
+                .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
 
@@ -62,10 +66,10 @@ public class VehicleService {
         return vehiclePage.map(vehicleMapper::toDto);
     }
 
-
+    @Transactional
     public VehicleResponseDTO getVehicle(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Masina cu id-ul %d nu a fost gasita!", id)));
 
         if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
             throw new AccessDeniedException("Nu ai permisiunea sa accesezi aceasta masina!");
@@ -79,7 +83,7 @@ public class VehicleService {
         User user = getCurrentUser();
 
         if (vehicleRepository.existsByLicensePlateAndUser(createDTO.licensePlate(), user)) {
-            throw new IllegalArgumentException("O masina cu acest numar exista deja in flota ta!");
+            throw new BusinessRuleException("O masina cu acest numar exista deja in flota ta!");
         }
 
         Vehicle newVehicle = vehicleMapper.toEntity(createDTO);
@@ -94,7 +98,7 @@ public class VehicleService {
     public VehicleResponseDTO updateVehicle(Long id, UpdateVehicleDTO updateDTO) {
         User user = getCurrentUser();
         Vehicle existingVehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Masina cu id-ul %d nu a fost gasita!", id)));
 
         if (!existingVehicle.getUser().getId().equals(user.getId())) {
             throw new AccessDeniedException("Nu poti modifica masina altui utilizator!");
@@ -106,7 +110,7 @@ public class VehicleService {
         if (updateDTO.licensePlate() != null) {
             if (!existingVehicle.getLicensePlate().equals(updateDTO.licensePlate()) &&
                     vehicleRepository.existsByLicensePlateAndUser(updateDTO.licensePlate(), user)) {
-                throw new IllegalArgumentException("Numarul apartine deja altei masini din flota ta!");
+                throw new BusinessRuleException("Numarul apartine deja altei masini din flota ta!");
             }
             existingVehicle.setLicensePlate(updateDTO.licensePlate());
         }
@@ -119,7 +123,7 @@ public class VehicleService {
     @Transactional
     public void deleteVehicle(Long id) {
         Vehicle vehicle = vehicleRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Masina cu id-ul %d nu a fost gasita!", id)));
 
         if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
             throw new AccessDeniedException("Nu poti sterge masina altui utilizator!");
