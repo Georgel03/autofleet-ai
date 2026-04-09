@@ -4,8 +4,7 @@ import com.autofleet.autofleet_ai.dto.CreateVehicleDTO;
 import com.autofleet.autofleet_ai.dto.FleetStatsDTO;
 import com.autofleet.autofleet_ai.dto.UpdateVehicleDTO;
 import com.autofleet.autofleet_ai.dto.VehicleResponseDTO;
-import com.autofleet.autofleet_ai.entity.User;
-import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.entity.*;
 import com.autofleet.autofleet_ai.exception.BusinessRuleException;
 import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.UserRepository;
@@ -139,5 +138,21 @@ public class VehicleService {
 
         List<Vehicle> vehicleList = vehicleRepository.getWarningVehiclesWithMoreThanOnePredByUser(user);
         return vehicleList.stream().map(vehicleMapper::toDto).toList();
+    }
+
+
+    public Page<VehicleResponseDTO> getVehiclesByEngineType(String engineType, int page, int size) {
+        User user = getCurrentUser();
+        Pageable pageable = PageRequest.of(page, size);
+
+        Class<? extends Vehicle> typeClass = switch (engineType.toUpperCase()) {
+            case "ELECTRIC" -> ElectricVehicle.class;
+            case "HYBRID" -> HybridVehicle.class;
+            case "THERMAL" -> ThermalVehicle.class;
+            default -> throw new BusinessRuleException("Tip de motor necunoscut: " + engineType);
+        };
+
+        return vehicleRepository.findByVehicleTypeAndUser(typeClass, user, pageable)
+                .map(vehicleMapper::toDto);
     }
 }

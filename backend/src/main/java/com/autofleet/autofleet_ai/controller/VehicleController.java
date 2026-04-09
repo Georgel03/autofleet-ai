@@ -108,5 +108,14 @@ public class VehicleController {
         return ResponseEntity.ok(warningVehicles);
     }
 
+    @GetMapping("/type/{type}")
+    public ResponseEntity<Page<VehicleResponseDTO>> getVehiclesByType(
+            @PathVariable String type,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Page<VehicleResponseDTO> vehiclePage = vehicleService.getVehiclesByEngineType(type, page, size);
+        return ResponseEntity.ok(vehiclePage);
+    }
+
 
 }

@@ -20,6 +20,9 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     Page<Vehicle> findAllByUser(User user, Pageable pageable);
 
+    @Query("SELECT v FROM Vehicle v WHERE TYPE(v) = :type AND v.user = :user")
+    Page<Vehicle> findByVehicleTypeAndUser(@Param("type") Class<? extends Vehicle> type, @Param("user") User user, Pageable pageable);
+
 
     @Query("SELECT v FROM Vehicle v WHERE v.user = :user AND (" +
             "LOWER(v.manufacturer) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
@@ -42,4 +45,6 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
     @Query("SELECT v FROM Vehicle v WHERE v.user = :user")
     List<Vehicle> findAllListByUser(@Param("user") User user);
+
+
 }
