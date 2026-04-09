@@ -4,11 +4,14 @@ import com.autofleet.autofleet_ai.dto.CreateMaintenanceRecordDTO;
 import com.autofleet.autofleet_ai.dto.MaintenanceRecordDTO;
 import com.autofleet.autofleet_ai.dto.UpdateMaintenanceRecordDTO;
 import com.autofleet.autofleet_ai.entity.MaintenanceRecord;
+import com.autofleet.autofleet_ai.entity.User;
 import com.autofleet.autofleet_ai.entity.Vehicle;
 import com.autofleet.autofleet_ai.exception.BusinessRuleException;
 import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.MaintenanceRecordRepository;
+import com.autofleet.autofleet_ai.repository.UserRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,21 +24,33 @@ public class MaintenanceRecordService {
     private final MaintenanceRecordRepository maintenanceRepository;
     private final VehicleRepository vehicleRepository;
     private final MaintenanceRecordMapper maintenanceMapper;
+    private final UserRepository userRepository;
 
     public MaintenanceRecordService(
             MaintenanceRecordRepository maintenanceRepository,
             VehicleRepository vehicleRepository,
-            MaintenanceRecordMapper maintenanceMapper) {
+            MaintenanceRecordMapper maintenanceMapper,
+            UserRepository userRepository) {
         this.maintenanceRepository = maintenanceRepository;
         this.vehicleRepository = vehicleRepository;
         this.maintenanceMapper = maintenanceMapper;
+        this.userRepository = userRepository;
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
 
     public List<MaintenanceRecordDTO> getRecordsByVehicleId(Long vehicleId) {
-        // Verificam intai daca masina exista
-        if (!vehicleRepository.existsById(vehicleId)) {
-            throw new IllegalArgumentException("Masina cu ID-ul " + vehicleId + " nu a fost gasita!");
+
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Masina cu ID-ul " + vehicleId + " nu a fost gasita!"));
+
+        if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
+            throw new BusinessRuleException("Nu ai permisiunea sa vezi mentenanta acestei masini!");
         }
 
         return maintenanceRepository.findByVehicleIdOrderByServiceDateDesc(vehicleId)
@@ -47,9 +62,16 @@ public class MaintenanceRecordService {
 
     @Transactional
     public MaintenanceRecordDTO createRecord(CreateMaintenanceRecordDTO createDTO) {
+
+        User currentUser = getCurrentUser();
+
         // Cautam masina in baza de date folosind ID-ul din DTO
         Vehicle vehicle = vehicleRepository.findById(createDTO.vehicleId())
-                .orElseThrow(() -> new BusinessRuleException("Masina cu ID-ul " + createDTO.vehicleId() + " nu exista!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Masina cu ID-ul " + createDTO.vehicleId() + " nu exista!"));
+
+        if (!vehicle.getUser().getId().equals(currentUser.getId())) {
+            throw new BusinessRuleException("Nu poti adauga o fisa de service la masina altui utilizator!");
+        }
 
         // Transformam si setam relatia
         MaintenanceRecord newRecord = maintenanceMapper.toEntity(createDTO, vehicle);
@@ -63,6 +85,10 @@ public class MaintenanceRecordService {
     public MaintenanceRecordDTO updateRecord(Long id, UpdateMaintenanceRecordDTO updateDTO) {
         MaintenanceRecord existingRecord = maintenanceRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Inregistrarea de service cu ID-ul " + id + " nu a fost gasita!"));
+
+        if (!existingRecord.getVehicle().getUser().getId().equals(getCurrentUser().getId())) {
+            throw new BusinessRuleException("Nu ai permisiunea sa modifici aceasta masina!");
+        }
 
         if (updateDTO.serviceDate() != null) {
             existingRecord.setServiceDate(updateDTO.serviceDate());
@@ -81,6 +107,14 @@ public class MaintenanceRecordService {
 
     @Transactional
     public void deleteRecord(Long id) {
+
+        MaintenanceRecord record = maintenanceRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Inregistrarea de service nu a fost gasita!"));
+
+        if (!record.getVehicle().getUser().getId().equals(getCurrentUser().getId())) {
+            throw new BusinessRuleException("Nu ai permisiunea sa stergi aceasta inregistrare!");
+        }
+
         if (!maintenanceRepository.existsById(id)) {
             throw new ResourceNotFoundException("Inregistrarea de service nu a fost gasita!");
         }

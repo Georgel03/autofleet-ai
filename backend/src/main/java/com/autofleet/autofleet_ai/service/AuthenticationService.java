@@ -15,9 +15,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthenticationService {
 
+    // baza de date
     private final UserRepository repository;
+    // codificare parola
     private final PasswordEncoder passwordEncoder;
+    // token generate
     private final JwtService jwtService;
+    // verifica daca parola introdusa la login se potriveste cu cea din baza de date.
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationService(UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService, AuthenticationManager authenticationManager) {

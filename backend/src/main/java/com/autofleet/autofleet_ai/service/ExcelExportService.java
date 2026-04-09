@@ -1,11 +1,15 @@
 package com.autofleet.autofleet_ai.service;
 
 import com.autofleet.autofleet_ai.entity.MaintenanceRecord;
+import com.autofleet.autofleet_ai.entity.User;
 import com.autofleet.autofleet_ai.entity.Vehicle;
+import com.autofleet.autofleet_ai.exception.BusinessRuleException;
 import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
+import com.autofleet.autofleet_ai.repository.UserRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -19,8 +23,18 @@ public class ExcelExportService {
 
     private final VehicleRepository vehicleRepository;
 
-    public ExcelExportService(VehicleRepository vehicleRepository) {
+    private final UserRepository userRepository;
+
+    public ExcelExportService(VehicleRepository vehicleRepository,
+                              UserRepository userRepository) {
         this.vehicleRepository = vehicleRepository;
+        this.userRepository = userRepository;
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
     // genereaza un raport Excel detaliat pentru un vehicul specificat prin ID.
@@ -28,6 +42,10 @@ public class ExcelExportService {
 
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new ResourceNotFoundException("Vehicle not found!"));
+
+        if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
+            throw new BusinessRuleException("Nu poti exporta raportul pentru masina altcuiva!");
+        }
 
         try (Workbook workbook = new XSSFWorkbook(); ByteArrayOutputStream out = new ByteArrayOutputStream()) {
             Sheet sheet = workbook.createSheet("Vehicle Report");

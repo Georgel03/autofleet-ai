@@ -15,6 +15,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 @Component
+// clasa filter este filtrarea de autentificare/logare onceperrequest garanteaza ca filtrul verifica pe toata lumea
+// o singura data, la absolut fiecare cerere (request) trimisa de frontend
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
@@ -25,6 +27,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
+    // procedura cand cineva vrea sa intre.
+    // primeste cererea de la user (request), raspunsul (response) si un pointer catre urmatorii pasi (filterChain)
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -32,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
-        // extragem header-ul de "Authorization" din cererea venită
+        // extragem header-ul de "Authorization" din cererea venita
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userEmail;
@@ -65,7 +69,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         null,
                         userDetails.getAuthorities()
                 );
-
+                // detalii extra strict tehnice cum ar fi adresa de IP a requestului
                 authToken.setDetails(
                         new WebAuthenticationDetailsSource().buildDetails(request)
                 );

@@ -16,6 +16,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
+// configuratii suplimentare de securitate
 @EnableWebSecurity
 public class SecurityConfig {
 
@@ -27,10 +28,11 @@ public class SecurityConfig {
         this.authenticationProvider = authenticationProvider;
     }
 
+    // pipeline de securitate prin care trece orice request
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // dezactivam CSRF pentru ca aplicatia noastra este un REST API stateless
+                // dezactivam CSRF pentru ca aplicatia noastra este un rest api stateless
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
@@ -54,6 +56,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // configuratie pentru CORS ca frontendul sa poata accesa datele oferite de backend
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

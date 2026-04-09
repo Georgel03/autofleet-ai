@@ -1,19 +1,21 @@
 package com.autofleet.autofleet_ai.service;
 
 import com.autofleet.autofleet_ai.dto.AIPredictionDTO;
-import com.autofleet.autofleet_ai.entity.AIPrediction;
-import com.autofleet.autofleet_ai.entity.MaintenanceRecord;
-import com.autofleet.autofleet_ai.entity.Vehicle;
-import com.autofleet.autofleet_ai.entity.VehicleStatus;
+import com.autofleet.autofleet_ai.entity.*;
+import com.autofleet.autofleet_ai.exception.BusinessRuleException;
+import com.autofleet.autofleet_ai.exception.ResourceNotFoundException;
 import com.autofleet.autofleet_ai.repository.AIPredictionRepository;
+import com.autofleet.autofleet_ai.repository.UserRepository;
 import com.autofleet.autofleet_ai.repository.VehicleRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -26,22 +28,35 @@ public class AIPredictionService {
     private final VehicleRepository vehicleRepository;
     private final WebClient webClient;
     private final ObjectMapper objectMapper;
+    private final UserRepository userRepository;
 
-    @Value("${openai.api.key}")
+    @Value("${spring.ai.openai.api-key}")
     private String apiKey;
 
     public AIPredictionService(AIPredictionRepository aiRepository,
-                               VehicleRepository vehicleRepository) {
+                               VehicleRepository vehicleRepository,
+                               UserRepository userRepository) {
         this.aiRepository = aiRepository;
         this.vehicleRepository = vehicleRepository;
         this.objectMapper = new ObjectMapper();
+        this.userRepository = userRepository;
         this.webClient = WebClient.builder().baseUrl("https://api.openai.com/v1").build();
+    }
+
+    private User getCurrentUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
     @Transactional
     public AIPredictionDTO generatePrediction(Long vehicleId) {
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
                 .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
+
+        if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
+            throw new BusinessRuleException("Nu poți genera predicții pentru mașina altui utilizator!");
+        }
 
         // istoricul de mentenanta ca text pentru AI
         String serviceHistoryText = vehicle.getMaintenanceHistory().stream()
@@ -130,7 +145,17 @@ public class AIPredictionService {
                     saved.getReasoning(), saved.getFailureProbability(), saved.getCreatedAt()
             );
 
-        } catch (Exception e) {
+        } catch (org.springframework.web.reactive.function.client.WebClientResponseException e) {
+            // Această excepție prinde exact erorile HTTP de la OpenAI (401, 404, 429)
+            String errorBody = e.getResponseBodyAsString();
+            System.err.println("\n=== DETALII EROARE OPENAI ===");
+            System.err.println("Status HTTP: " + e.getStatusCode());
+            System.err.println("Mesaj de la server: " + errorBody);
+            System.err.println("=============================\n");
+
+            throw new RuntimeException("Eroare OpenAI (" + e.getStatusCode() + "). Verifică consola backend.");
+        }
+        catch (Exception e) {
             throw new RuntimeException("Eroare OpenAI: " + e.getMessage());
         }
     }
