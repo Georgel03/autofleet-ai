@@ -18,10 +18,10 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     boolean existsByLicensePlateAndUser(String licensePlate, User user);
 
 
-    Page<Vehicle> findAllByUser(User user, Pageable pageable);
+    Page<Vehicle> findAllByUserAndIsActiveTrue(User user, Pageable pageable);
 
 
-    @Query("SELECT v FROM Vehicle v WHERE v.user = :user AND (" +
+    @Query("SELECT v FROM Vehicle v WHERE v.user = :user AND v.isActive = true AND (" +
             "LOWER(v.manufacturer) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(v.model) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
             "LOWER(v.licensePlate) LIKE LOWER(CONCAT('%', :keyword, '%')))")

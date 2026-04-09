@@ -22,6 +22,9 @@ public abstract class Vehicle {
 
     private Integer mileage;
 
+    @Column(name = "is_active")
+    private boolean isActive = true;
+
     @Enumerated(EnumType.STRING)
     private VehicleStatus status;
 

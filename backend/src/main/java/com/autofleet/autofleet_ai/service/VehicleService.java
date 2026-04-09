@@ -53,6 +53,7 @@ public class VehicleService {
     }
 
 
+    @Transactional(readOnly = true)
     public Page<VehicleResponseDTO> getVehiclesPage(int page, int size, String sortBy, String sortDir, String keyword) {
         User user = getCurrentUser();
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
@@ -62,7 +63,7 @@ public class VehicleService {
         if (keyword != null && !keyword.trim().isEmpty()) {
             vehiclePage = vehicleRepository.searchVehiclesByUser(keyword.trim(), user, pageable);
         } else {
-            vehiclePage = vehicleRepository.findAllByUser(user, pageable);
+            vehiclePage = vehicleRepository.findAllByUserAndIsActiveTrue(user, pageable);
         }
         return vehiclePage.map(vehicleMapper::toDto);
     }
@@ -129,7 +130,21 @@ public class VehicleService {
         if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
             throw new AccessDeniedException("Nu poti sterge masina altui utilizator!");
         }
+
         vehicleRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void softDeleteVehicle(Long id) {
+        Vehicle vehicle = vehicleRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Masina cu id-ul %d nu a fost gasita!", id)));
+
+        if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
+            throw new AccessDeniedException("Nu poti sterge masina altui utilizator!");
+        }
+
+        vehicle.setActive(false);
+        vehicleRepository.save(vehicle);
     }
 
 

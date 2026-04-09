@@ -108,5 +108,11 @@ public class VehicleController {
         return ResponseEntity.ok(warningVehicles);
     }
 
+    @DeleteMapping("/soft/{id}")
+    public ResponseEntity<Void> softDeleteVehicle(@PathVariable Long id) {
+        vehicleService.softDeleteVehicle(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
