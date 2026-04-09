@@ -55,7 +55,7 @@ public class AIPredictionService {
                 .orElseThrow(() -> new IllegalArgumentException("Masina nu a fost gasita!"));
 
         if (!vehicle.getUser().getId().equals(getCurrentUser().getId())) {
-            throw new BusinessRuleException("Nu poți genera predicții pentru mașina altui utilizator!");
+            throw new BusinessRuleException("Nu poti genera predictii pentru masina altui utilizator!");
         }
 
         // istoricul de mentenanta ca text pentru AI

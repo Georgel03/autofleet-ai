@@ -43,7 +43,7 @@ public class MaintenanceRecordService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
-
+    @Transactional
     public List<MaintenanceRecordDTO> getRecordsByVehicleId(Long vehicleId) {
 
         Vehicle vehicle = vehicleRepository.findById(vehicleId)
