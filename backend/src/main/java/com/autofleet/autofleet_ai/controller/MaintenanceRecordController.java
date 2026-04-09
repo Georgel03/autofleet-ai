@@ -48,4 +48,9 @@ public class MaintenanceRecordController {
         maintenanceService.deleteRecord(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/costs/{vehicleId}")
+    public ResponseEntity<Double> getTotalCostForCar(@PathVariable Long vehicleId) {
+        return ResponseEntity.ok(maintenanceService.getTotalCostByVehicleId(vehicleId));
+    }
 }

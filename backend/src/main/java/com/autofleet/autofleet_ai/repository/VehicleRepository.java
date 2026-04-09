@@ -14,9 +14,7 @@ import java.util.List;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
 
-
     boolean existsByLicensePlateAndUser(String licensePlate, User user);
-
 
     Page<Vehicle> findAllByUser(User user, Pageable pageable);
 

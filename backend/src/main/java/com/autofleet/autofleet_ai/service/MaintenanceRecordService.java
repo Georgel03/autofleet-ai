@@ -43,6 +43,23 @@ public class MaintenanceRecordService {
                 .orElseThrow(() -> new ResourceNotFoundException("Utilizatorul nu a fost gasit in baza de date"));
     }
 
+    public Double getTotalCostByVehicleId(Long vehicleId) {
+
+        User currentUser = getCurrentUser();
+        Vehicle vehicle = vehicleRepository.findById(vehicleId)
+                .orElseThrow(() -> new ResourceNotFoundException("Masina cu ID-ul " + vehicleId + " nu a fost gasita!"));
+
+        if (!vehicle.getUser().getId().equals(currentUser.getId())) {
+            throw new BusinessRuleException("Nu ai permisiunea sa vezi mentenanta acestei masini!");
+        }
+
+        return maintenanceRepository.findByVehicleIdOrderByServiceDateDesc(vehicle.getId())
+                .stream()
+                .mapToDouble(MaintenanceRecord::getCost)
+                .sum();
+
+    }
+
     @Transactional
     public List<MaintenanceRecordDTO> getRecordsByVehicleId(Long vehicleId) {
 
